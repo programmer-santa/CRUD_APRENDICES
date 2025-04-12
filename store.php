@@ -2,17 +2,32 @@
 
 include 'conexion.php';
 
-$nombre = $_POST['nombre'];
-$fecha_nacimiento = $_POST['fecha_nacimiento'];
+$nombre = trim($_POST['nombre']);
+$fecha_nacimiento = trim($_POST['fecha_nacimiento']);
 
-$sql = "INSERT INTO aprendices (nombre, fecha_nacimiento) VALUES ('$nombre', '$fecha_nacimiento')";
-$resultado = mysqli_query($conexion, $sql);
-
-if ($resultado) {
-    echo "<script>alert('Registro creado correctamente');</script>";
+if (empty($nombre) || empty($fecha_nacimiento)) {
+    echo "<script>alert('Todos los campos son obligatorios');</script>";
     echo "<script>window.location.href='index.php';</script>";
-} else {
-    echo "<script>alert('Error al crear el registro');</script>";
-    echo "<script>window.location.href='index.php';</script>";
+    exit;
 }
-mysqli_close($conexion);
+
+try {
+    $sql = "INSERT INTO aprendices (nombre, fecha_nacimiento) VALUES (:nombre, :fecha)";
+    $statement = $conexion->prepare($sql);
+    $statement->bindParam(':nombre', $nombre);
+    $statement->bindParam(':fecha', $fecha_nacimiento);
+    $resultado = $statement->execute();
+
+    if ($resultado) {
+        echo "<script>alert('Registro creado correctamente');</script>";
+    } else {
+        echo "<script>alert('Error al crear el registro');</script>";
+    }
+
+    echo "<script>window.location.href='index.php';</script>";
+
+} catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+}
+
+?>

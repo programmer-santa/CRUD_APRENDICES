@@ -28,13 +28,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php
-                            include 'conexion.php';
-                            $sql = "SELECT * FROM aprendices";
-                            $resultado = mysqli_query($conexion, $sql);
-                            $contador = 1;
+                        <?php
+                        include 'conexion.php';
+                        $sql = "SELECT * FROM aprendices";
+                        $statement = $conexion->prepare($sql);
+                        $resultado = $statement->execute();
+                        $contador = 1;
 
-                            while ($row = mysqli_fetch_array($resultado)) {
+                                while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
                                 $id = $row['id'];
                                 $nombre = $row['nombre'];
                                 $fecha_nacimiento = $row['fecha_nacimiento'];
@@ -57,9 +58,8 @@
                                 echo "</td>";
                                 echo "</tr>";
                                 $contador++;
-                            }
-                            mysqli_close($conexion);
-                            ?>
+                                }
+                                    ?>
                         </tbody>
                     </table>
                 </div>
